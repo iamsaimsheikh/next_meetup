@@ -1,32 +1,32 @@
 import MeetupDetails from "../../components/meetups/MeetupDetails"
-import Layout from "../../components/layout/Layout"
+import {MongoClient, ObjectId} from 'mongodb'
 
-function MeetupDetailsPage() {
+function MeetupDetailsPage(props) {
+
+  console.log(props)
+
   return (
         <MeetupDetails 
-            id='m1'
-            title='The Initial Meetup'
-            image='https://source.unsplash.com/user/c_v_r/1480x700'
-            address='online - remote'
-            description= 'The first remote meeting for the team'/>
+            id={props.meetup.id}
+            title={props.meetup.title}
+            image={props.meetup.image}
+            address={props.meetup.address}
+            description={props.meetup.description}/>
   )
 }
 
 export async function getStaticPaths() {
+
+  const client = await MongoClient.connect(`mongodb://admin:password@localhost:27017/next_meetup?authSource=admin`)
+  const db = client.db();
+  const meetupsCollection = db.collection('meetups');
+  const meetups = await meetupsCollection.find().toArray();
+
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "m1"
-        }
-      },
-      {
-        params: {
-          meetupId: "m2"
-        }
-      }
-    ]
+    paths: meetups.map(meetup => ({
+      params: {meetupId : meetup._id.toString()}
+    }))
   }
 }
 
@@ -34,14 +34,22 @@ export async function getStaticProps(context) {
 
   const meetupId = context.params.meetupId;
 
+  const client = await MongoClient.connect(`mongodb://admin:password@localhost:27017/next_meetup?authSource=admin`)
+  const db = client.db();
+  const meetupsCollection = db.collection('meetups');
+  const meetup = await meetupsCollection.findOne({_id: ObjectId(meetupId)});
+  
+
+  client.close();
+
   return {
     props: {
-      meetupData : {
-        id: meetupId,
-        title: 'The Initial Meetup',
-        image:'https://source.unsplash.com/user/c_v_r/1480x700',
-        address: 'online - remote',
-        description: 'The first remote meeting for the team'
+      meetup: {
+        id: meetupId.toString(),
+        title: meetup.title,
+        image: meetup.image,
+        address: meetup.address,
+        description: meetup.description
       }
     }
   }
