@@ -25,8 +25,8 @@ function MeetupDetailsPage(props) {
 
 export async function getStaticPaths() {
 
-  const client = await MongoClient.connect(`mongodb://admin:password@localhost:27017/next_meetup?authSource=admin`)
-  const db = client.db();
+  const client = await MongoClient.connect(`mongodb+srv://admin:mypassword@nextmeetup.iag8fbb.mongodb.net/?retryWrites=true&w=majority`)
+  const db = client.db('nextmeetup');
   const meetupsCollection = db.collection('meetups');
   const meetups = await meetupsCollection.find().toArray();
 
@@ -42,8 +42,8 @@ export async function getStaticProps(context) {
 
   const meetupId = context.params.meetupId;
 
-  const client = await MongoClient.connect(`mongodb://admin:password@localhost:27017/next_meetup?authSource=admin`)
-  const db = client.db();
+  const client = await MongoClient.connect(`mongodb+srv://admin:mypassword@nextmeetup.iag8fbb.mongodb.net/?retryWrites=true&w=majority`)
+  const db = client.db('nextmeetup');
   const meetupsCollection = db.collection('meetups');
   const meetup = await meetupsCollection.findOne({_id: ObjectId(meetupId)});
   

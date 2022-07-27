@@ -4,8 +4,8 @@ import {MongoClient} from 'mongodb';
 
 async function handler(req, res) {
 
-    const client = await MongoClient.connect(`mongodb://admin:password@localhost:27017/next_meetup?authSource=admin`)
-    const db = client.db();
+    const client = await MongoClient.connect(`mongodb+srv://admin:mypassword@nextmeetup.iag8fbb.mongodb.net/?retryWrites=true&w=majority`,{ useNewUrlParser: true })
+    const db = client.db('nextmeetup');
 
     if(req.method === 'POST'){
 
